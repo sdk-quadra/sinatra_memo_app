@@ -1,0 +1,14 @@
+<h6>メモ一覧</h6>
+<div class="content">
+  <p>
+    <%= @is_empty %>
+  </p>
+  <ul>
+    <% @files.each do |k, v| %>
+    <li>
+      <a href="<%= k %>">
+        <%= v %></a>
+    </li>
+    <% end %>
+  </ul>
+</div>
