@@ -3,16 +3,6 @@
 require "sinatra"
 require "sinatra/reloader"
 
-class Rack::MethodOverride
-  ALLOWED_METHODS=%w[POST GET]
-  def method_override(env)
-    req = Rack::Request.new(env)
-    method = req.params[METHOD_OVERRIDE_PARAM_KEY] || env[HTTP_METHOD_OVERRIDE_HEADER]
-    method.to_s.upcase
-  end
-end
-enable :method_override
-
 before do
   @title = "メモアプリ"
   @ext = ".txt"
@@ -32,7 +22,7 @@ helpers do
   end
 end
 
-get "/"  do
+get "/" do
   @disp_add = "on"
   dir_files = dir
   @is_empty = "まだメモはありません" if dir_files.empty?
@@ -53,7 +43,7 @@ get "/new" do
   erb :new
 end
 
-post "/create" do
+post "/new" do
   memo = params[:memo]
 
   memo.gsub!(/[\p{Z}\t\r\n\v\f]/, "")
@@ -84,7 +74,7 @@ get "/:file_num/edit" do
   erb :edit
 end
 
-patch "/:file_num/update" do
+patch "/:file_num" do
   file_num = params[:file_num]
   memo = params[:memo]
   File.open(@memo_loc + file_num + @ext, "w") do |f|
@@ -93,7 +83,7 @@ patch "/:file_num/update" do
   redirect "/"
 end
 
-delete "/:file_num/delete" do
+delete "/:file_num" do
   file_num = params[:file_num]
   File.delete(@memo_loc + file_num + @ext)
   redirect "/"

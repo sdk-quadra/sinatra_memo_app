@@ -1,6 +1,6 @@
 <h6>メモ内容変更</h6>
 
-  <form method="post" action="/<%= params[:file_num] %>/update?_method=patch">
+  <form method="post" action="/<%= params[:file_num] %>?_method=patch">
     <div class="form-group">
       <textarea name="memo" rows="5" class="form-control bg-gray"><%= @content %></textarea>
     </div>

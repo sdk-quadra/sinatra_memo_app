@@ -3,4 +3,8 @@
   <%= @content %>
 </div>
 <a href="/<%= params[:file_num] %>/edit" class="btn btn-success">変更</a>
-<a href="/<%= params[:file_num] %>/delete?_method=DELETE" class="btn btn-danger">削除</a>
+<form method="post" action="/<%= params[:file_num] %>?_method=delete" class="form_delete">
+  <div class="form-group">
+    <input type="submit" value="削除" class="btn btn-danger">
+  </div>
+</form>
