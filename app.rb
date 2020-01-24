@@ -34,7 +34,7 @@ get "/" do
     disp_fname = "メモ" + zenkaku_num.to_s
     files[b] = disp_fname
   }
-  @files = files.sort_by { |_, v| v }.to_h  # valでsort
+  @files = files.sort_by { |k, v| k.to_i }.reverse.to_h  # keyでsort
 
   erb :index
 end
@@ -46,8 +46,8 @@ end
 post "/new" do
   memo = params[:memo]
 
-  memo.gsub!(/[\p{Z}\t\r\n\v\f]/, "")
-  if memo.size < 1  # 空文字は保存しない
+  trim_memo = memo.gsub(/[\p{Z}\t\r\n\v\f]/, "")
+  if trim_memo.size < 1  # 空文字は保存しない
     redirect "/new"
   end
 
