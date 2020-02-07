@@ -2,48 +2,25 @@
 <html lang="ja">
 
 <head>
-  <mata charset="utf-8">
+  <meta charset="utf-8">
     <title>
       <%= @title %>
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel=“stylesheet” href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <style>
-    footer {
-      margin-top: 3rem;
-      border-top: 1px solid #DDDDDD;
-      padding: 8px 16px;
-    }
-
-    .bg-gray {
-      background-color: #F6F6F6;
-      margin-top: 1rem;
-    }
-
-    .content {
-      margin: 1rem 0 2rem;
-      border-top: 1px solid #F1F1F1;
-    }
-
-    .form_delete {
-      display: inline-block;
-    }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
   <header class="mb-4">
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark">
       <a class="navbar-brand" href="/">メモアプリ</a>
-      <div class="collapse navbar-collapse" id="nav-bar">
-        <ul class="navbar-nav mr-auto"></ul>
-        <ul class="nav navbar-nav navbar-right">
-          <% if @disp_add == "on" %>
-          <li><a href="/new" class="btn btn-success">追加</a></li>
-          <% end %>
-        </ul>
-      </div>
+      <% if @disp_add == "on" %>
+        <div>
+          <a href="/new" class="btn btn-success">追加</a>
+        </div>
+      <% end %>
     </nav>
   </header>
   <div class="container-fluid">

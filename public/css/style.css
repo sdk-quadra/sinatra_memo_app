@@ -1,0 +1,19 @@
+footer {
+  margin-top: 3rem;
+  border-top: 1px solid #DDDDDD;
+  padding: 8px 16px;
+}
+
+.bg-gray {
+  background-color: #F6F6F6;
+  margin-top: 1rem;
+}
+
+.content {
+  margin: 1rem 0 2rem;
+  border-top: 1px solid #F1F1F1;
+}
+
+.form_delete {
+  display: inline-block;
+}
