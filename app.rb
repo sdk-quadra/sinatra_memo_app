@@ -1,88 +1,84 @@
 # frozen_string_literal: true
 
 require "sinatra"
+require "sinatra/base"
 require "sinatra/reloader"
 require "pg"
 
-before do
-  @title = "メモアプリ"
-  @prefix = "メモ"
-  @disp_add = "off"
+class MemoApp < Sinatra::Base
+  TITLE = "メモアプリ"
+  PREFIX = "メモ"
 
-  @db_conn = PG.connect(dbname: "app")
-  @table = "memos"
-  @col_content = "content"
-end
+  configure do
+    enable :method_override
+    register Sinatra::Reloader
+  end
 
-helpers do
-  def transact(sql)
-    @db_conn.exec("BEGIN")
-    if @db_conn.exec(sql)
-      @db_conn.exec("COMMIT")
-    else
-      @db_conn.exec("ROLLBACK")
+  before do
+    @title = TITLE
+    @add_btn = false
+    @db_conn = PG.connect(dbname: "app")
+  end
+
+  helpers do
+    def convert_to_zenkaku(memo_records)
+      files = {}
+      memo_records.each do |record|
+        zenkaku_id = record["id"].tr("0-9", "０-９")  # 表示は全角
+        files[record["id"]] = PREFIX + zenkaku_id
+      end
+      files
+    end
+
+    def fetch_content
+      @db_conn.prepare("memo", "SELECT content FROM memos WHERE id = $1")
+      record = @db_conn.exec_prepared("memo", [params[:id]])[0]
+      content = record["content"]
+      content.gsub!(/\n/, "<br>")
+      content
     end
   end
-end
 
-get "/" do
-  @disp_add = "on"
-  files = {}
-
-  memo_records = @db_conn.exec("SELECT * FROM #{@table}")
-  @is_empty = "メモがありません.追加してください" if memo_records.count < 1
-
-  memo_records.each do |record|
-    zenkaku_id = record["id"].tr("0-9", "０-９")  # 表示は全角
-    files[record["id"]] = @prefix + zenkaku_id
+  get "/" do
+    @add_btn = true
+    memo_records = @db_conn.exec("SELECT * FROM memos")
+    @empty_notice = "メモがありません.追加してください" if memo_records.count < 1
+    files = convert_to_zenkaku(memo_records)
+    @files = files.sort.reverse.to_h  # keyでsort
+    erb :index
   end
 
-  @files = files.sort.reverse.to_h  # keyでsort
-
-  erb :index
-end
-
-get "/new" do
-  erb :new
-end
-
-post "/" do
-  memo = params[:memo]
-  sql = "INSERT INTO #{@table} (#{@col_content}) values (E'#{memo}')"
-  transact(sql)
-  redirect "/"
-end
-
-get "/:id" do
-  id = params[:id]
-  content = @db_conn.exec("SELECT #{@col_content} FROM #{@table} WHERE id = #{id}")
-  content.each do |c|
-    @content = c["#{@col_content}"]
+  get "/new" do
+    erb :new
   end
-  @content.gsub!(/\n/, "<br>")
-  erb :show
-end
 
-get "/:id/edit" do
-  id = params[:id]
-  content = @db_conn.exec("SELECT #{@col_content} FROM #{@table} WHERE id = #{id}")
-  content.each do |c|
-    @content = c["#{@col_content}"]
+  post "/" do
+    @db_conn.prepare("memo", "INSERT INTO memos (content) VALUES ($1)")
+    @db_conn.exec_prepared("memo", [params[:memo]])
+    redirect "/"
   end
-  erb :edit
-end
 
-patch "/:id" do
-  id = params[:id]
-  memo = params[:memo]
-  sql = "UPDATE #{@table} SET #{@col_content} = E'#{memo}' WHERE id = #{id}"
-  transact(sql)
-  redirect "/"
-end
+  get "/:id" do
+    @content = fetch_content
+    erb :show
+  end
 
-delete "/:id" do
-  id = params[:id]
-  sql = "DELETE FROM #{@table} where id = #{id}"
-  transact(sql)
-  redirect "/"
+  get "/:id/edit" do
+    @content = fetch_content
+    erb :edit
+  end
+
+  patch "/:id" do
+    @db_conn.prepare("memo", "UPDATE memos SET content = $1 WHERE id = $2")
+    @db_conn.exec_prepared("memo", [params[:memo], params[:id]])
+    redirect "/"
+  end
+
+  delete "/:id" do
+    @db_conn.prepare("memo", "DELETE FROM memos WHERE id = $1")
+    @db_conn.exec_prepared("memo", [params[:id]])
+    redirect "/"
+  end
+
+  run! if app_file == $0
 end
