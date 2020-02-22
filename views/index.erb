@@ -4,10 +4,10 @@
     <%= @empty_notice %>
   </p>
   <ul>
-    <% @files.each do |k, v| %>
+    <% @memo_records.each do |record| %>
     <li>
-      <a href="<%= k %>">
-        <%= v %></a>
+      <a href="<%= record["id"] %>">
+        <%= MemoApp::PREFIX + convert_to_zenkaku(record["id"]) %></a>
     </li>
     <% end %>
   </ul>

@@ -15,36 +15,34 @@ class MemoApp < Sinatra::Base
   end
 
   before do
-    @title = TITLE
-    @add_btn = false
+    @show_add_button = false
     @db_conn = PG.connect(dbname: "app")
   end
 
   helpers do
-    def convert_to_zenkaku(memo_records)
-      files = {}
-      memo_records.each do |record|
-        zenkaku_id = record["id"].tr("0-9", "０-９")  # 表示は全角
-        files[record["id"]] = PREFIX + zenkaku_id
-      end
-      files
+    def convert_to_zenkaku(id)
+      zenkaku_id = id.tr("0-9", "０-９")  # 表示は全角
     end
 
-    def fetch_content
+    def find_content(id)
       @db_conn.prepare("memo", "SELECT content FROM memos WHERE id = $1")
-      record = @db_conn.exec_prepared("memo", [params[:id]])[0]
+      record = @db_conn.exec_prepared("memo", [id])[0]
       content = record["content"]
-      content.gsub!(/\n/, "<br>")
-      content
+    end
+
+    def convert_nl_to_br(content)
+      nl_to_br = content.gsub(/\n/, "<br>")
+    end
+
+    def show_add_button?
+      @show_add_button
     end
   end
 
   get "/" do
-    @add_btn = true
-    memo_records = @db_conn.exec("SELECT * FROM memos")
-    @empty_notice = "メモがありません.追加してください" if memo_records.count < 1
-    files = convert_to_zenkaku(memo_records)
-    @files = files.sort.reverse.to_h  # keyでsort
+    @show_add_button = true
+    @memo_records = @db_conn.exec("SELECT * FROM memos ORDER BY id DESC")
+    @empty_notice = "メモがありません.追加してください" if @memo_records.count < 1
     erb :index
   end
 
@@ -59,12 +57,13 @@ class MemoApp < Sinatra::Base
   end
 
   get "/:id" do
-    @content = fetch_content
+    content = find_content(params[:id])
+    @content = convert_nl_to_br(content)
     erb :show
   end
 
   get "/:id/edit" do
-    @content = fetch_content
+    @content = find_content(params[:id])
     erb :edit
   end
 

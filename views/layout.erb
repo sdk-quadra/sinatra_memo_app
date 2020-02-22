@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
     <title>
-      <%= @title %>
+      <%= MemoApp::TITLE %>
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
@@ -16,7 +16,7 @@
   <header class="mb-4">
     <nav class="navbar navbar-dark bg-dark">
       <a class="navbar-brand" href="/">メモアプリ</a>
-      <% if @add_btn %>
+      <% if show_add_button? %>
         <div>
           <a href="/new" class="btn btn-success">追加</a>
         </div>
