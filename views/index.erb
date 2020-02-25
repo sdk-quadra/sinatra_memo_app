@@ -1,14 +1,15 @@
 <h6>メモ一覧</h6>
-<div class="content">
-  <p class="mt-2">
-    <%= @empty_notice %>
-  </p>
-  <ul>
-    <% @memo_records.each do |record| %>
-    <li>
-      <a href="<%= record["id"] %>">
-        <%= MemoApp::PREFIX + convert_to_zenkaku(record["id"]) %></a>
-    </li>
-    <% end %>
-  </ul>
+<div class="content pt-2">
+  <% if @memo_records.count > 0 %>
+    <ul>
+      <% @memo_records.each do |record| %>
+      <li>
+        <a href="<%= record["id"] %>">
+          <%= MemoApp::PREFIX + convert_to_zenkaku(record["id"]) %></a>
+      </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>メモがありません.追加してください</p>
+  <% end %>
 </div>

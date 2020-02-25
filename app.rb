@@ -21,17 +21,16 @@ class MemoApp < Sinatra::Base
 
   helpers do
     def convert_to_zenkaku(id)
-      zenkaku_id = id.tr("0-9", "０-９")  # 表示は全角
+      id.tr("0-9", "０-９")
     end
 
     def find_content(id)
       @db_conn.prepare("memo", "SELECT content FROM memos WHERE id = $1")
-      record = @db_conn.exec_prepared("memo", [id])[0]
-      content = record["content"]
+      @db_conn.exec_prepared("memo", [id])[0]["content"]
     end
 
     def convert_nl_to_br(content)
-      nl_to_br = content.gsub(/\n/, "<br>")
+      content.gsub(/\n/, "<br>")
     end
 
     def show_add_button?
@@ -42,7 +41,6 @@ class MemoApp < Sinatra::Base
   get "/" do
     @show_add_button = true
     @memo_records = @db_conn.exec("SELECT * FROM memos ORDER BY id DESC")
-    @empty_notice = "メモがありません.追加してください" if @memo_records.count < 1
     erb :index
   end
 
@@ -57,8 +55,7 @@ class MemoApp < Sinatra::Base
   end
 
   get "/:id" do
-    content = find_content(params[:id])
-    @content = convert_nl_to_br(content)
+    @content = find_content(params[:id])    
     erb :show
   end
 
