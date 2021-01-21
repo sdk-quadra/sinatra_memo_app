@@ -1,8 +1,10 @@
-### DLしたら
-必要に応じて`bundle install`してください
+## 起動ファイル
+* app.rbです. `bundle exec ruby app.rb`
+* URL `localhost:4567`
 
-### 起動ファイルは
-app.rbです. `bundle exec ruby app.rb`
+## demo
+* http://sinatra-memo.herokuapp.com
 
-### app image
-![image](https://user-images.githubusercontent.com/39234092/72995700-b1ca3380-3e3c-11ea-950c-43d5432e081f.png)
+## screenshot
+![image](https://user-images.githubusercontent.com/39234092/105276865-9e83ac80-5be5-11eb-8f18-3252e58f98b0.png)
+
